@@ -15,6 +15,16 @@ class Player
      * @param array $my_hand
      * @param array $gameState
      */
+    const POKER = 10;
+
+    const FULL = 9;
+
+    const DRILL = 8;
+
+    const TWO_PAIR = 7;
+
+    const PAIR = 6;
+
     public function __construct(array $state)
     {
         $this->gameState = $state;
@@ -158,6 +168,33 @@ class Player
             ];
 
         return $ranks[$rank];
+    }
+
+
+    private function matchingCards()
+    {
+        $visibleCards = array_merge($this->communityCards, $this->myHand);
+
+        $match = [];
+
+
+        foreach ($visibleCards as $cards) {
+            if (isset($match[$cards['rank']])) {
+                $match[$cards['rank']]++;
+            } else {
+                $match[$cards['rank']] = 0;
+            }
+        }
+
+        array_filter($match, function($card) {
+            return $card > 1;
+        });
+
+        if (count($match) === 1 && $match[0] === 4) return self::POKER; // poker
+        if (count($match) === 2 && max($match) === 3) return self::FULL; // full house
+        if (count($match) === 1 && max($match) === 3) return self::DRILL; // drill
+        if (count($match) === 2) return self::TWO_PAIR; // 2 pair
+        if (count($match) === 1) return self::PAIR; // 1 pair
     }
 
 }
