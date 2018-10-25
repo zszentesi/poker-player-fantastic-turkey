@@ -28,7 +28,7 @@ class Player
     {
 
         if ($this->isItGoodHand($this->my_hand)) {
-            return $this->minRaise();
+            return $this->callMinRaise();
         }
 
         return $this->checkFold();
@@ -62,6 +62,9 @@ class Player
 
     public function minRaise(){
         return $this->gameState['current_buy_in'] - $this->me['bet'] + $this->gameState['minimum_raise'];
+    }
+    public function callMinRaise(){
+        return $this->gameState['minimum_raise'];
     }
 
     public function checkFold(){
