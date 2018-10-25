@@ -5,7 +5,7 @@ class Player
     const VERSION = "shark";
 
     public $me = [];
-    public $my_hand = [];
+    public $myHand = [];
     public $gameState = [];
     private $communityCards = [];
 
@@ -19,16 +19,26 @@ class Player
     {
         $this->gameState = $state;
         $this->me = $state['players'][$state['in_action']];
-        $this->my_hand = $this->me['hole_cards'];
+        $this->myHand = $this->me['hole_cards'];
         $this->communityCards = $state['community_cards'];
     }
 
 
     public function betRequest()
     {
-
-        if ($this->isItGoodHand($this->my_hand)) {
-            return $this->callMinRaise();
+        switch (count($this->communityCards)){
+            case 0:
+                return $this->preFlopStrategy();
+                break;
+            case 3:
+                return $this->flopStrategy();
+                break;
+            case 4:
+                return $this->turnStrategy();
+                break;
+            case 5:
+                return $this->riverStrsategy();
+                break;
         }
 
         return $this->checkFold();
@@ -63,6 +73,15 @@ class Player
     public function minRaise(){
         return $this->gameState['current_buy_in'] - $this->me['bet'] + $this->gameState['minimum_raise'];
     }
+
+    public function potRaise(){
+        return $this->gameState['pot'];
+    }
+
+    public function allIn(){
+        return $this->me['stack'];
+    }
+
     public function callMinRaise(){
         return $this->gameState['minimum_raise'];
     }
@@ -71,12 +90,31 @@ class Player
         return 0;
     }
 
-
     public function isFaceCard($card1, $card2)
     {
         $faceArray = ['10', 'J', 'Q', 'K', 'A'];
 
         return in_array($card1['rank'], $faceArray) && in_array($card2['rank'], $faceArray);
+    }
+
+    private function preFlopStrategy()
+    {
+        return $this->isItGoodHand($this->myHand);
+    }
+
+    private function flopStrategy()
+    {
+        return $this->isItGoodHand($this->myHand);
+    }
+
+    private function turnStrategy()
+    {
+        return $this->isItGoodHand($this->myHand);
+    }
+
+    private function riverStrsategy()
+    {
+        return $this->isItGoodHand($this->myHand);
     }
 
 }
