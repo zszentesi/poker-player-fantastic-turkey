@@ -2,7 +2,7 @@
 
 class Player
 {
-    const VERSION = "Default PHP folding player";
+    const VERSION = "good hand raiser";
 
     public function betRequest($game_state)
     {
