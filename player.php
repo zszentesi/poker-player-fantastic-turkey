@@ -7,12 +7,12 @@ class Player
     public function betRequest($game_state)
     {
         foreach ($game_state['players'] as $player) {
-            if(array_key_exists('hole_cards', $player)){
+            if (array_key_exists('hole_cards', $player)) {
                 $me = $player;
                 $my_hand = $me['hole_cards'];
 
-                if($this->isItGoodHand($my_hand)) {
-                    return 1000;
+                if ($this->isItGoodHand($my_hand)) {
+                    return $game_state['minimum_raise'];
                 }
             }
         }
@@ -23,16 +23,18 @@ class Player
     {
     }
 
-    public function isItGoodHand($hand){
+    public function isItGoodHand($hand)
+    {
         $card1 = $hand[0];
         $card2 = $hand[1];
 
-        if($card1['suit'] == $card2['suit'] ){
+        if ($card1['suit'] == $card2['suit']) {
             return true;
         }
-        if($card1['rank'] == $card2['rank'] ){
+        if ($card1['rank'] == $card2['rank']) {
             return true;
         }
         return false;
     }
+
 }
