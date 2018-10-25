@@ -4,8 +4,6 @@ require_once('player.php');
 
 $state = json_decode($_POST['game_state'], true);
 
-
-
 switch($_POST['action'])
 {
     case 'bet_request':
