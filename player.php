@@ -34,7 +34,7 @@ class Player
         if ($card1['rank'] == $card2['rank']) {
             return true;
         }
-        if ($this->isItGoodHand($card1, $card2)) {
+        if ($this->isFaceCard($card1, $card2)) {
             return true;
         }
 
