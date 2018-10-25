@@ -126,12 +126,16 @@ class Player
     {
         switch ($this->isItGoodHand($this->myHand)) {
             case self::PRE_FACE:
+                error_log("PRE FACE CARDS DETECTED");
             case self::PRE_SAME_RANK:
+                error_log("PRE PAIR DETECTED");
                 return max($this->potRaise(), 100);
             case self::PRE_SAME_SUIT:
+                error_log("PRE SUIT DETECTED");
                 return $this->callMinRaise();
             default:
                 if($this->limp()){
+                    error_log("PRE LIMP");
                     return $this->call();
                 }
                 return $this->checkFold();
@@ -143,13 +147,18 @@ class Player
         $hand = $this->getHand();
         switch ($hand) {
             case self::POKER:
+                error_log("POKER DETECTED");
             case self::FULL:
+                error_log("FULL DETECTED");
                 return $this->allIn();
             case self::DRILL:
+                error_log("DRILL DETECTED");
                 return $this->potRaise();
             case self::TWO_PAIR:
+                error_log("TWO PAIR DETECTED");
                 return $this->minRaise();
             case self::PAIR:
+                error_log("ONE PAIR DETECTED");
                 return $this->callMinRaise();
         }
 
