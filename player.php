@@ -2,7 +2,7 @@
 
 class Player
 {
-    const VERSION = "shark with strategies 0.1";
+    const VERSION = "Daniel Negreanu";
 
     public $me = [];
     public $myHand = [];
@@ -36,7 +36,7 @@ class Player
 
     public function betRequest()
     {
-        switch (count($this->communityCards)){
+        switch (count($this->communityCards)) {
             case 0:
                 return $this->preFlopStrategy();
                 break;
@@ -76,39 +76,47 @@ class Player
         return false;
     }
 
-    public function call(){
+    public function call()
+    {
         return $this->gameState['current_buy_in'] - $this->me['bet'];
     }
 
-    public function minRaise(){
+    public function minRaise()
+    {
         return $this->gameState['current_buy_in'] - $this->me['bet'] + $this->gameState['minimum_raise'];
     }
 
-    public function potRaise(){
+    public function potRaise()
+    {
         return $this->gameState['pot'];
     }
 
-    public function allIn(){
+    public function allIn()
+    {
         return $this->me['stack'];
     }
 
-    public function callMinRaise(){
+    public function callMinRaise()
+    {
         return $this->gameState['minimum_raise'];
     }
 
-    public function checkFold(){
+    public function checkFold()
+    {
         return 0;
     }
 
-    public function calculateDistance($card1, $card2){
+    public function calculateDistance($card1, $card2)
+    {
         $rank1 = $this->getRank($card1['rank']);
         $rank2 = $this->getRank($card2['rank']);
 
-        $big = max($rank1,$rank2);
-        $small = min($rank1,$rank2);
+        $big = max($rank1, $rank2);
+        $small = min($rank1, $rank2);
 
-        return $big-$small;
+        return $big - $small;
     }
+
     public function isFaceCard($card1, $card2)
     {
         $faceArray = ['10', 'J', 'Q', 'K', 'A'];
@@ -118,7 +126,7 @@ class Player
 
     private function preFlopStrategy()
     {
-        if($this->isItGoodHand($this->myHand)){
+        if ($this->isItGoodHand($this->myHand)) {
             return $this->callMinRaise();
         }
         return $this->checkFold();
@@ -126,26 +134,30 @@ class Player
 
     private function flopStrategy()
     {
-        if($this->isItGoodHand($this->myHand)){
-            return $this->callMinRaise();
+        $hand = $this->matchingCards();
+        switch ($hand) {
+            case self::POKER:
+            case self::FULL:
+                return $this->allIn();
+            case self::DRILL:
+                return $this->potRaise();
+            case self::TWO_PAIR:
+                return $this->minRaise();
+            case self::PAIR:
+                return $this->checkFold();
         }
+
         return $this->checkFold();
     }
 
     private function turnStrategy()
     {
-        if($this->isItGoodHand($this->myHand)){
-            return $this->callMinRaise();
-        }
-        return $this->checkFold();
+        return $this->flopStrategy();
     }
 
     private function riverStrategy()
     {
-        if($this->isItGoodHand($this->myHand)){
-            return $this->callMinRaise();
-        }
-        return $this->checkFold();
+        return $this->flopStrategy();
     }
 
     private function getRank($rank)
@@ -165,7 +177,7 @@ class Player
             '3' => 3,
             '2' => 2,
             'A1' => 1,
-            ];
+        ];
 
         return $ranks[$rank];
     }
@@ -186,15 +198,28 @@ class Player
             }
         }
 
-        array_filter($match, function($card) {
+        array_filter($match, function ($card) {
             return $card > 1;
         });
 
-        if (count($match) === 1 && $match[0] === 4) return self::POKER; // poker
-        if (count($match) === 2 && max($match) === 3) return self::FULL; // full house
-        if (count($match) === 1 && max($match) === 3) return self::DRILL; // drill
-        if (count($match) === 2) return self::TWO_PAIR; // 2 pair
-        if (count($match) === 1) return self::PAIR; // 1 pair
+        if (count($match) === 1 && $match[0] === 4) {
+            return self::POKER;
+        } // poker
+        if (count($match) === 2 && max($match) === 3) {
+            return self::FULL;
+        } // full house
+        if (count($match) === 1 && max($match) === 3) {
+            return self::DRILL;
+        } // drill
+        if (count($match) === 2) {
+            return self::TWO_PAIR;
+        } // 2 pair
+        if (count($match) === 1) {
+            return self::PAIR;
+        } // 1 pair
+
+
+        return 0;
     }
 
 }
