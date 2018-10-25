@@ -34,6 +34,7 @@ class Player
         if ($card1['rank'] == $card2['rank']) {
             return true;
         }
+
         return false;
     }
 
