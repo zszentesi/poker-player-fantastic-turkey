@@ -2,7 +2,7 @@
 
 class Player
 {
-    const VERSION = "Daniel Negreanu";
+    const VERSION = "phil ivey";
     public $me = [];
     public $myHand = [];
     public $gameState = [];
@@ -184,7 +184,7 @@ class Player
         $straight = $this->getStraight();
         $flush = $this->getFlush();
 
-        if($straight && $flush) {
+        if ($straight && $flush) {
             return self::STRAIGHT_FLUSH;
         }
 
@@ -196,16 +196,13 @@ class Player
      */
     private function matchingCards()
     {
-
-
         $match = [];
-
 
         foreach ($this->visibleCards as $cards) {
             if (isset($match[$cards['rank']])) {
                 $match[$cards['rank']]++;
             } else {
-                $match[$cards['rank']] = 0;
+                $match[$cards['rank']] = 1;
             }
         }
 
@@ -236,10 +233,10 @@ class Player
     private function getStraight()
     {
         $numericRanks = [];
-        foreach ($this->visibleCards as $card){
-            $numericRanks[]= $this->getRank($card['rank']);
+        foreach ($this->visibleCards as $card) {
+            $numericRanks[] = $this->getRank($card['rank']);
         }
-        if(in_array(14, $numericRanks,true)){
+        if (in_array(14, $numericRanks, true)) {
             $numericRanks[] = 1;
         }
 
@@ -247,7 +244,7 @@ class Player
 
         foreach ($numericRanksUnique as $num_rank) {
             $straight = range($num_rank, $num_rank + 4);
-            if(count(array_intersect($straight, $numericRanksUnique)) > 4){
+            if (count(array_intersect($straight, $numericRanksUnique)) > 4) {
                 return self::STRAIGHT;
             }
         }
@@ -257,8 +254,19 @@ class Player
 
     private function getFlush()
     {
+        $colors = [];
+        foreach ($this->visibleCards as $card) {
+            if (isset($colors[$card['suit']])) {
+                $colors[$card['suit']]++;
+            } else {
+                $colors[$card['suit']] = 1;
+            }
+        }
+        if(max($colors)>4) {
+            return self::FLUSH;
+        }
+
         return 0;
-        //return self::FLUSH;
     }
 
 }
