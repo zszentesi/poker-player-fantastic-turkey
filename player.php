@@ -3,27 +3,21 @@
 class Player
 {
     const VERSION = "Daniel Negreanu";
-
     public $me = [];
     public $myHand = [];
     public $gameState = [];
+
     private $communityCards = [];
+    public $visibleCards;
 
-    /**
-     * Player constructor.
-     * @param array $me
-     * @param array $my_hand
-     * @param array $gameState
-     */
+    const STRAIGHT_FLUSH = 11;
     const POKER = 10;
-
     const FULL = 9;
-
-    const DRILL = 8;
-
-    const TWO_PAIR = 7;
-
-    const PAIR = 6;
+    const FLUSH = 8;
+    const STRAIGHT = 7;
+    const DRILL = 6;
+    const TWO_PAIR = 5;
+    const PAIR = 4;
 
     public function __construct(array $state)
     {
@@ -31,6 +25,7 @@ class Player
         $this->me = $state['players'][$state['in_action']];
         $this->myHand = $this->me['hole_cards'];
         $this->communityCards = $state['community_cards'];
+        $this->visibleCards = array_merge($this->communityCards, $this->myHand);
     }
 
 
@@ -51,7 +46,7 @@ class Player
                 break;
         }
 
-        return $this->preFlopStrategy();
+        return $this->checkFold();
     }
 
     public function showdown()
@@ -134,7 +129,7 @@ class Player
 
     private function flopStrategy()
     {
-        $hand = $this->matchingCards();
+        $hand = $this->getHand();
         switch ($hand) {
             case self::POKER:
             case self::FULL:
@@ -144,7 +139,7 @@ class Player
             case self::TWO_PAIR:
                 return $this->minRaise();
             case self::PAIR:
-                return $this->checkFold();
+                return $this->callMinRaise();
         }
 
         return $this->checkFold();
@@ -183,14 +178,30 @@ class Player
     }
 
 
+    private function getHand()
+    {
+        $matches = $this->matchingCards();
+        $straight = $this->getStraight();
+        $flush = $this->getFlush();
+
+        if($straight && $flush) {
+            return self::STRAIGHT_FLUSH;
+        }
+
+        return max($matches, $straight, $flush);
+    }
+
+    /**
+     * @return int
+     */
     private function matchingCards()
     {
-        $visibleCards = array_merge($this->communityCards, $this->myHand);
+
 
         $match = [];
 
 
-        foreach ($visibleCards as $cards) {
+        foreach ($this->visibleCards as $cards) {
             if (isset($match[$cards['rank']])) {
                 $match[$cards['rank']]++;
             } else {
@@ -220,6 +231,34 @@ class Player
 
 
         return 0;
+    }
+
+    private function getStraight()
+    {
+        $numericRanks = [];
+        foreach ($this->visibleCards as $card){
+            $numericRanks[]= $this->getRank($card['rank']);
+        }
+        if(in_array(14, $numericRanks,true)){
+            $numericRanks[] = 1;
+        }
+
+        $numericRanksUnique = array_unique($numericRanks);
+
+        foreach ($numericRanksUnique as $num_rank) {
+            $straight = range($num_rank, $num_rank + 4);
+            if(count(array_intersect($straight, $numericRanksUnique)) > 4){
+                return self::STRAIGHT;
+            }
+        }
+
+        return 0;
+    }
+
+    private function getFlush()
+    {
+        return 0;
+        //return self::FLUSH;
     }
 
 }
