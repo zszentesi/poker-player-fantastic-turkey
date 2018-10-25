@@ -121,6 +121,9 @@ class Player
 
     private function preFlopStrategy()
     {
+        if($this->limp()){
+            return $this->call();
+        }
         if ($this->isItGoodHand($this->myHand)) {
             return $this->callMinRaise();
         }
@@ -267,6 +270,11 @@ class Player
         }
 
         return 0;
+    }
+
+    private function limp()
+    {
+        return rand(1,10) > 2;
     }
 
 }
