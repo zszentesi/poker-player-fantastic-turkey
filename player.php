@@ -34,11 +34,19 @@ class Player
         if ($card1['rank'] == $card2['rank']) {
             return true;
         }
-        if (!is_numeric($card1['rank']) && !is_numeric($card2['rank'])) {
+        if ($this->isItGoodHand($card1, $card2)) {
             return true;
         }
 
         return false;
+    }
+
+
+    public function isFaceCard($card1, $card2)
+    {
+        $faceArray = ['10', 'J', 'Q', 'K', 'A'];
+
+        return in_array($card1['rank'], $faceArray) && in_array($card2['rank'], $faceArray);
     }
 
 }
