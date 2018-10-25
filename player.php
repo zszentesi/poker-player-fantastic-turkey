@@ -23,8 +23,8 @@ class Player
     {
         $this->gameState = $state;
         $this->me = $state['players'][$state['in_action']];
-        $this->myHand = $this->me['hole_cards'];
-        $this->communityCards = $state['community_cards'];
+        $this->myHand = $this->me['hole_cards'] ?? [];
+        $this->communityCards = $state['community_cards'] ?? [];
         $this->visibleCards = array_merge($this->communityCards, $this->myHand);
     }
 
