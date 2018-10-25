@@ -37,7 +37,7 @@ class Player
                 return $this->turnStrategy();
                 break;
             case 5:
-                return $this->riverStrsategy();
+                return $this->riverStrategy();
                 break;
         }
 
@@ -90,6 +90,15 @@ class Player
         return 0;
     }
 
+    public function calculateDistance($card1, $card2){
+        $rank1 = $this->getRank($card1['rank']);
+        $rank2 = $this->getRank($card2['rank']);
+
+        $big = max($rank1,$rank2);
+        $small = min($rank1,$rank2);
+
+        return $big-$small;
+    }
     public function isFaceCard($card1, $card2)
     {
         $faceArray = ['10', 'J', 'Q', 'K', 'A'];
@@ -99,22 +108,56 @@ class Player
 
     private function preFlopStrategy()
     {
-        return $this->isItGoodHand($this->myHand);
+        if($this->isItGoodHand($this->myHand)){
+            return $this->callMinRaise();
+        }
+        return $this->checkFold();
     }
 
     private function flopStrategy()
     {
-        return $this->isItGoodHand($this->myHand);
+        if($this->isItGoodHand($this->myHand)){
+            return $this->callMinRaise();
+        }
+        return $this->checkFold();
     }
 
     private function turnStrategy()
     {
-        return $this->isItGoodHand($this->myHand);
+        if($this->isItGoodHand($this->myHand)){
+            return $this->callMinRaise();
+        }
+        return $this->checkFold();
     }
 
-    private function riverStrsategy()
+    private function riverStrategy()
     {
-        return $this->isItGoodHand($this->myHand);
+        if($this->isItGoodHand($this->myHand)){
+            return $this->callMinRaise();
+        }
+        return $this->checkFold();
+    }
+
+    private function getRank($rank)
+    {
+        $ranks = [
+            'A' => 14,
+            'K' => 13,
+            'Q' => 12,
+            'J' => 11,
+            '10' => 10,
+            '9' => 9,
+            '8' => 8,
+            '7' => 7,
+            '6' => 6,
+            '5' => 5,
+            '4' => 4,
+            '3' => 3,
+            '2' => 2,
+            'A1' => 1,
+            ];
+
+        return $ranks[$rank];
     }
 
 }
