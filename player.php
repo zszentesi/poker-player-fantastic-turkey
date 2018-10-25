@@ -2,7 +2,7 @@
 
 class Player
 {
-    const VERSION = "shark";
+    const VERSION = "shark with strategies";
 
     public $me = [];
     public $myHand = [];
