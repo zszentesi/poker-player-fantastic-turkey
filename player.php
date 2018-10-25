@@ -2,24 +2,39 @@
 
 class Player
 {
-    const VERSION = "good hand raiser";
+    const VERSION = "shark";
 
-    public function betRequest($game_state)
+    public $me = [];
+    public $my_hand = [];
+    public $gameState = [];
+    private $communityCards = [];
+
+    /**
+     * Player constructor.
+     * @param array $me
+     * @param array $my_hand
+     * @param array $gameState
+     */
+    public function __construct(array $state)
     {
-        foreach ($game_state['players'] as $player) {
-            if (array_key_exists('hole_cards', $player)) {
-                $me = $player;
-                $my_hand = $me['hole_cards'];
-
-                if ($this->isItGoodHand($my_hand)) {
-                    return $game_state['minimum_raise'];
-                }
-            }
-        }
-        return 0;
+        $this->gameState = $state;
+        $this->me = $state['players'][$state['in_action']];
+        $this->my_hand = $this->me['hole_cards'];
+        $this->communityCards = $state['community_cards'];
     }
 
-    public function showdown($game_state)
+
+    public function betRequest()
+    {
+
+        if ($this->isItGoodHand($this->my_hand)) {
+            return $this->minRaise();
+        }
+
+        return $this->checkFold();
+    }
+
+    public function showdown()
     {
     }
 
@@ -39,6 +54,18 @@ class Player
         }
 
         return false;
+    }
+
+    public function call(){
+        return $this->gameState['current_buy_in'] - $this->me['bet'];
+    }
+
+    public function minRaise(){
+        return $this->gameState['current_buy_in'] - $this->me['bet'] + $this->gameState['minimum_raise'];
+    }
+
+    public function checkFold(){
+        return 0;
     }
 
 
