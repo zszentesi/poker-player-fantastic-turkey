@@ -3,6 +3,9 @@
 class Player
 {
     const VERSION = "phil ivey";
+    const PRE_SAME_SUIT = 1;
+    const PRE_SAME_RANK = 2;
+    const PRE_FACE = 3;
     public $me = [];
     public $myHand = [];
     public $gameState = [];
@@ -59,16 +62,16 @@ class Player
         $card2 = $hand[1];
 
         if ($card1['suit'] == $card2['suit']) {
-            return true;
+            return self::PRE_SAME_SUIT;
         }
         if ($card1['rank'] == $card2['rank']) {
-            return true;
+            return self::PRE_SAME_RANK;
         }
         if ($this->isFaceCard($card1, $card2)) {
-            return true;
+            return self::PRE_FACE;
         }
 
-        return false;
+        return 0;
     }
 
     public function call()
@@ -121,13 +124,18 @@ class Player
 
     private function preFlopStrategy()
     {
-        if($this->limp()){
-            return $this->call();
+        switch ($this->isItGoodHand($this->myHand)) {
+            case self::PRE_FACE:
+            case self::PRE_SAME_RANK:
+                return max($this->potRaise(), 100);
+            case self::PRE_SAME_SUIT:
+                return $this->callMinRaise();
+            default:
+                if($this->limp()){
+                    return $this->call();
+                }
+                return $this->checkFold();
         }
-        if ($this->isItGoodHand($this->myHand)) {
-            return $this->callMinRaise();
-        }
-        return $this->checkFold();
     }
 
     private function flopStrategy()
