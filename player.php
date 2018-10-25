@@ -2,7 +2,7 @@
 
 class Player
 {
-    const VERSION = "shark with strategies";
+    const VERSION = "shark with strategies 0.1";
 
     public $me = [];
     public $myHand = [];
@@ -41,7 +41,7 @@ class Player
                 break;
         }
 
-        return $this->checkFold();
+        return $this->preFlopStrategy();
     }
 
     public function showdown()
